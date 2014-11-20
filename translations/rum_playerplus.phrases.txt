@@ -1,0 +1,19 @@
+﻿"Phrases"
+{
+	"close menu"
+	{
+		"en"			"0. Close Menu"
+	}
+	"spectator"
+	{
+		"en"			"Join Spectators"
+	}
+	"survivor"
+	{
+		"en"			"Join Survivors"
+	}
+	"infected"
+	{
+		"en"			"Join Infected"
+	}
+}

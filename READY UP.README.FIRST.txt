@@ -1,0 +1,92 @@
+ ___________________________________________________________
+/                                                          \\
+|  RRRR    EEEEEEE    A     DDDD   Y     Y U     U  ppppp  ||
+| R    R   E         A A   D    D   Y   Y  U     U p     p ||
+| R    R   E        A   A  D     D   Y Y   U     U p     p ||
+| R    R   E       A     A D     D    Y    U     U p     p ||
+|  RRRR    EEEEEE  A     A D     D    Y    U     U  ppppp  ||
+| R    R   E        AAAAA  D     D    Y    U     U p       ||
+| R     R  E       A     A D     D    Y    U     U p       ||
+| R      R E       A     A D    D     Y    U     U p       ||
+| R      R EEEEEEE A     A DDDDD     Y Y    UUUUU  p       ||
+\__________________________________________________________/|
+ \_________________________________________________________/
+
+			   V 6.0.1
+			   Requires Sourcemod v1.5.x or greater.
+
+ ___________________
+/                   \
+|     Compiling     |
+\___________________/
+
+I've gone ahead and structured the GITHUB repository exactly as is needed in order to compile
+both ReadyUp and all of its supported modules.
+
+NOTE: I HAVE INCLUDED THE LIBRARIES FOR SMLIB, LEFT4DOWNTOWN, L4D2_DIRECT, AND OTHER REQUIRED DEPENDENCIES
+OF THE VERSIONS I USED WHEN DEVELOPING AND COMPILING. HOWEVER, IT IS RECOMMENDED THAT YOU USE THE LATEST
+VERSION MADE AVAILABLE BY ITS RESPECTED DEVELOPER. IF YOU FIND A VERSION THAT DOES NOT WORK WITH READYUP OR
+ANY OF ITS MODULES, SIMPLY REVERT TO THE VERSIONS INCLUDED ON THE REPOSITORY AT: http://github.com/exskye
+
+1.	Extract the contents from the Github repository EXACTLY AS IS. You can create a clone of the repository on
+	your local machine or download a ZIP from Github.
+2.	readyup.sp REQUIRES parser.sp, along with several files in the \scripting\include folder. For the smoothest
+	experience, again, make a mirror image of the \scripting\ folder and its subfolders from the repository.
+3.	Drag readyup.sp over the compile.exe.
+
+ ___________________
+/                   \
+|      Modules      |
+\___________________/
+
+Ready Up is designed to provide custom forwards and natives that can be used by modules, as was its original
+design philosophy to be "modular" in design. Modules extend the functionality of the core ready up plugin.
+Modules are designated by rum_ at the beginning of their name. This isn't required when writing a module, but
+I've done it to make it easier for end users to differentiate between the core and any modules that I write.
+
+Modules require the files within the \scripting\include folder, but do not require readyup.sp or parser.sp
+to be present. Compiled modules do require a compiled version of readyup.sp to be present in the \plugins\
+directory on the server to function.
+
+ ___________________
+/                   \
+|   Installation    |
+\___________________/
+
+Required files are placed in identical representations of their required locations server-side.
+For example, you would place the \configs\readyup\ files in that folder server-side. If the folder doesn't
+exist, create it. If the appropriate files aren't properly placed, the plugin and any installed modules will
+throw errors.
+I've made the archive folder hierarchy identical to what is required for the plugin and modules to properly
+function, for convenience to you.
+
+Edit the readyup.cfg inside the \configs\readyup and make sure you set all of the lines, appropriately.
+This config is responsible for setting versus, coop, etc. game modes based on information entered.
+Please refer to these values descriptions for more information.
+
+ ___________________
+/                   \
+|     Reporting     |
+\___________________/
+
+Please refer to the FAQ, as well as the COMPILE and INSTALLATION instruction guides on the Github page.
+If your issue is still not found in these files, please open an issue on Github at http://github.com/exskye
+
+When submitting a report please include the following:
+1. The sourcemod log file (only the section(s) related to readyup or its modules. I will not sort through log spam to assist you.)
+2. Steps you've taken to attempt to resolve the issue.
+3. The version of sourcemod you are using.
+
+COMPILATION ERRORS:
+Please verify that you have setup your folder as an exact copy of the Github repo. If you have updated the \include\ files, try
+reverting to the version(s) on the Github repo. I cannot guarantee that Ready Up or its modules will work properly with the newer
+versions of those files.
+I have painstakingly tested the repo to verify that compilation works properly. It REQUIRES Sourcemod V1.5+
+
+ ___________________
+/                   \
+|     Donations     |
+\___________________/
+
+If you want to support the continued development of my work, please consider donating.
+You can donate to me via PayPal @ michaeltoth.85@gmail.com
