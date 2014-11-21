@@ -1,0 +1,31 @@
+New updates will be added to this log. Version updates prior to v2.0.1 will not be listed, as they aren't relevant.
+
+v2.0.2
+
++	Melee Weapon Support added to the POINTS module
+	-	Added a melee weapons menu with the fireaxe and cricket bat as examples.
+	-	Melee weapons can be designated CAMPAIGN SPECIFIC:
+		+	If NOT playing on an allowed campaign, the melee option will NOT APPEAR in the menu.
+		+	As of this update, RPG now requires ReadyUp v6.0.1, which adds support for querying the current campaign.
+
+v2.0.1
+
++	Teamwork Awards
+	-	Experience bonuses are awarded to players for team-based damage distribution against special infected.
+	-	A player must deal a minimum percentage of damage for consideration.
+	-	There is a maximum amount that will be considered to discourage lone-wolfing, but the player will still
+		earn full base experience for any damage dealt.
+	-	A bonus is awarded to each player, based on the number of qualifying participants.
+	
++	Discourage Rushing, Encourage Teamwork
+	-	Proximity bonuses and penalties to experience gain and damage dealt have been added, based on the number
+		of qualifying teammates nearby.
+	-	Lone-wolving (e.g. Rushing, abandoning teammates) will result in doing the standard damage, but earning
+		experience (and points) at a severe fraction of what you would if you stayed within range of your teammates.
+
++	New Chat Layout
+	-	Chat layout has been modified in order to allow players with longer names, as well as players who would like
+		to use larger custom tags to not have their chat cut off. The new chat style is:
+		
+		[Developer] (2) Skye
+		>> This is an example of the new visual chat style.
