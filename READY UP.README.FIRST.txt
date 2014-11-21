@@ -64,6 +64,10 @@ Edit the readyup.cfg inside the \configs\readyup and make sure you set all of th
 This config is responsible for setting versus, coop, etc. game modes based on information entered.
 Please refer to these values descriptions for more information.
 
+NOTE: READYUP WILL ONLY FUNCTION IF THE FIRST AND LAST MAP OF A CAMPAIGN ARE IN THE MAPLIST.CFG.
+Custom maps must be added to the configs/readyup/maplist.cfg manually. If the campaign is not listed in this
+config, readyup and any modules installed WILL NOT FUNCTION.
+
  ___________________
 /                   \
 |     Reporting     |
@@ -82,11 +86,3 @@ Please verify that you have setup your folder as an exact copy of the Github rep
 reverting to the version(s) on the Github repo. I cannot guarantee that Ready Up or its modules will work properly with the newer
 versions of those files.
 I have painstakingly tested the repo to verify that compilation works properly. It REQUIRES Sourcemod V1.5+
-
- ___________________
-/                   \
-|     Donations     |
-\___________________/
-
-If you want to support the continued development of my work, please consider donating.
-You can donate to me via PayPal @ michaeltoth.85@gmail.com
