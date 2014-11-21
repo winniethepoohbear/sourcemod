@@ -198,74 +198,91 @@ stock ActivateAbility(activator, target, pos, damage, zombieclass, Handle:Keys, 
 		Format(ClientZombieClassRequired, sizeof(ClientZombieClassRequired), "%s", GetKeyValue(Keys, Values, "activator class required?"));
 		Format(VictimZombieClassRequired, sizeof(VictimZombieClassRequired), "%s", GetKeyValue(Keys, Values, "target class required?"));
 
-		if (target == 0) Format(VictimZombieClass, sizeof(VictimZombieClass), "-1");
-		else {
+		decl String:WeaponsPermitted[512];
+		Format(WeaponsPermitted, sizeof(WeaponsPermitted), "ignore");
 
-			if (GetClientTeam(target) == TEAM_INFECTED) Format(VictimZombieClass, sizeof(VictimZombieClass), "%d", FindZombieClass(target));
-			else Format(VictimZombieClass, sizeof(VictimZombieClass), "0");
-		}
-		if (GetClientTeam(activator) == TEAM_INFECTED) Format(ClientZombieClass, sizeof(ClientZombieClass), "%d", FindZombieClass(activator));
-		else Format(ClientZombieClass, sizeof(ClientZombieClass), "0");
+		decl String:WeaponsPermittedStrict[512];
+		Format(WeaponsPermittedStrict, sizeof(WeaponsPermittedStrict), "ignore");
 
-		if (IsLegitimateClient(activator) && (StrContains(ClientZombieClassRequired, "0", false) != -1 && GetClientTeam(activator) == TEAM_SURVIVOR ||
-			StrContains(ClientZombieClassRequired, ClientZombieClass, false) != -1 && GetClientTeam(activator) == TEAM_INFECTED) &&
-			(target == 0 || (IsLegitimateClient(target) && (StrContains(VictimZombieClassRequired, "0", false) != -1 && GetClientTeam(target) == TEAM_SURVIVOR ||
-			StrContains(VictimZombieClassRequired, VictimZombieClass, false) != -1 && GetClientTeam(target) == TEAM_INFECTED)))) {
+		Format(WeaponsPermitted, sizeof(WeaponsPermitted), "%s", GetKeyValue(Keys, Values, "weapons permitted?"));
+		Format(WeaponsPermittedStrict, sizeof(WeaponsPermittedStrict), "%s", GetKeyValue(Keys, Values, "weapons permitted strict?"));
+		decl String:PlayerWeapon[64];
+		if (GetClientTeam(activator) == TEAM_INFECTED) Format(PlayerWeapon, sizeof(PlayerWeapon), "ignore");
+		else GetClientWeapon(activator, PlayerWeapon, sizeof(PlayerWeapon));
+		if (StrEqual(WeaponsPermitted, "ignore", false) || StrEqual(WeaponsPermitted, "all", false) || StrContains(WeaponsPermitted, PlayerWeapon, false) != -1) {
 
-			//if (StrEqual(key, "class required?") && (StringToInt(value) == zombieclass || (StringToInt(value) == 0 && GetClientTeam(client) == TEAM_SURVIVOR) || zombieclass == 9)) {
+			if (StrEqual(WeaponsPermittedStrict, "ignore", false) || StrEqual(WeaponsPermittedStrict, "all", false) || StrEqual(WeaponsPermittedStrict, PlayerWeapon, false)) {
 
-			//if (!IsAbilityCooldown(client, TalentName) && !b_IsImmune[victim]) {
+				if (target == 0) Format(VictimZombieClass, sizeof(VictimZombieClass), "-1");
+				else {
 
-			if (!IsAbilityCooldown(activator, TalentName) && !IsAbilityImmune(target, TalentName)) {
+					if (GetClientTeam(target) == TEAM_INFECTED) Format(VictimZombieClass, sizeof(VictimZombieClass), "%d", FindZombieClass(target));
+					else Format(VictimZombieClass, sizeof(VictimZombieClass), "0");
+				}
+				if (GetClientTeam(activator) == TEAM_INFECTED) Format(ClientZombieClass, sizeof(ClientZombieClass), "%d", FindZombieClass(activator));
+				else Format(ClientZombieClass, sizeof(ClientZombieClass), "0");
 
-				survivoreffects		=	FindAbilityEffects(activator, Keys, Values, 2, 0);
-				infectedeffects		=	FindAbilityEffects(activator, Keys, Values, 3, 0);
+				if (IsLegitimateClient(activator) && (StrContains(ClientZombieClassRequired, "0", false) != -1 && GetClientTeam(activator) == TEAM_SURVIVOR ||
+					StrContains(ClientZombieClassRequired, ClientZombieClass, false) != -1 && GetClientTeam(activator) == TEAM_INFECTED) &&
+					(target == 0 || (IsLegitimateClient(target) && (StrContains(VictimZombieClassRequired, "0", false) != -1 && GetClientTeam(target) == TEAM_SURVIVOR ||
+					StrContains(VictimZombieClassRequired, VictimZombieClass, false) != -1 && GetClientTeam(target) == TEAM_INFECTED)))) {
 
-				if (!IsFakeClient(activator)) i_Strength			=	GetTalentStrength(activator, TalentName) * 1.0;
-				else i_Strength									=	GetTalentStrength(-1, TalentName) * 1.0;
+					//if (StrEqual(key, "class required?") && (StringToInt(value) == zombieclass || (StringToInt(value) == 0 && GetClientTeam(client) == TEAM_SURVIVOR) || zombieclass == 9)) {
 
-				//i_Strength			=	1.0;
-				if (i_Strength <= 0.0) return;	// Locked talents will appear as LESS THAN 0.0 (they will be -1.0)
-					
-				i_FirstPoint		=	StringToFloat(GetKeyValue(Keys, Values, "first point value?"));
-				i_EachPoint			=	StringToFloat(GetKeyValue(Keys, Values, "increase per point?"));
-				i_Strength			=	i_FirstPoint + (i_EachPoint * i_Strength);
+					//if (!IsAbilityCooldown(client, TalentName) && !b_IsImmune[victim]) {
 
-				if (!IsFakeClient(activator)) i_Time				=	GetTalentStrength(activator, TalentName) * 1.0;
-				else i_Time										=	GetTalentStrength(-1, TalentName) * 1.0;
-				//i_Time					=	1.0;
-				if (i_Time > 0.0) i_Time	*=	StringToFloat(GetKeyValue(Keys, Values, "ability time per point?"));
+					if (!IsAbilityCooldown(activator, TalentName) && !IsAbilityImmune(target, TalentName)) {
 
-				if (!IsFakeClient(activator)) i_Cooldown			=	GetTalentStrength(activator, TalentName) * 1.0;
-				else i_Cooldown									=	GetTalentStrength(-1, TalentName) * 1.0;
+						survivoreffects		=	FindAbilityEffects(activator, Keys, Values, 2, 0);
+						infectedeffects		=	FindAbilityEffects(activator, Keys, Values, 3, 0);
 
-				i_Cooldown				=	StringToFloat(GetKeyValue(Keys, Values, "cooldown start?")) + (StringToFloat(GetKeyValue(Keys, Values, "cooldown per point?")) * i_Cooldown);
-				//i_Cooldown				=	1.0;
+						if (!IsFakeClient(activator)) i_Strength			=	GetTalentStrength(activator, TalentName) * 1.0;
+						else i_Strength									=	GetTalentStrength(-1, TalentName) * 1.0;
 
-				if (TriggerAbility(activator, target, ability, pos, Keys, Values, TalentName)) {	//	Don't need to check if the player has ability points since the roll is 0 if they don't.
-
-					if (i_Cooldown > 0.0) {
-
-						//if (IsFakeClient(client)) LogMessage("Creating Cooldown for %N by attacker %N for %3.3f seconds", victim, client, i_Cooldown);
-
-						/*if (IsClientActual(victim)) {
+						//i_Strength			=	1.0;
+						if (i_Strength <= 0.0) return;	// Locked talents will appear as LESS THAN 0.0 (they will be -1.0)
 							
-							b_IsImmune[victim] = true;
-							CreateTimer(i_Cooldown, Timer_IsNotImmune, victim, TIMER_FLAG_NO_MAPCHANGE);
-						}*/
-						if (IsClientActual(target)) CreateImmune(target, GetTalentPosition(target, TalentName), i_Cooldown);		// Immunities to individual talents so multiple talents can trigger!
-						if (IsClientActual(activator)) CreateCooldown(activator, GetTalentPosition(activator, TalentName), i_Cooldown);	// Infected Bots don't have cooldowns between abilities! Mwahahahaha
-					}
+						i_FirstPoint		=	StringToFloat(GetKeyValue(Keys, Values, "first point value?"));
+						i_EachPoint			=	StringToFloat(GetKeyValue(Keys, Values, "increase per point?"));
+						i_Strength			=	i_FirstPoint + (i_EachPoint * i_Strength);
 
-					if (!StrEqual(infectedeffects, "0")) {
+						if (!IsFakeClient(activator)) i_Time				=	GetTalentStrength(activator, TalentName) * 1.0;
+						else i_Time										=	GetTalentStrength(-1, TalentName) * 1.0;
+						//i_Time					=	1.0;
+						if (i_Time > 0.0) i_Time	*=	StringToFloat(GetKeyValue(Keys, Values, "ability time per point?"));
 
-						if (IsLegitimateClientAlive(activator) && GetClientTeam(activator) == TEAM_INFECTED) ActivateAbilityEx(activator, activator, damage, infectedeffects, i_Strength, i_Time);
-						else if (IsLegitimateClientAlive(target) && GetClientTeam(target) == TEAM_INFECTED) ActivateAbilityEx(target, activator, damage, infectedeffects, i_Strength, i_Time);
-					}
-					if (!StrEqual(survivoreffects, "0")) {
+						if (!IsFakeClient(activator)) i_Cooldown			=	GetTalentStrength(activator, TalentName) * 1.0;
+						else i_Cooldown									=	GetTalentStrength(-1, TalentName) * 1.0;
 
-						if (IsLegitimateClientAlive(activator) && GetClientTeam(activator) == TEAM_SURVIVOR) ActivateAbilityEx(activator, activator, damage, survivoreffects, i_Strength, i_Time);
-						else if (IsLegitimateClientAlive(target) && GetClientTeam(target) == TEAM_SURVIVOR) ActivateAbilityEx(target, activator, damage, survivoreffects, i_Strength, i_Time);
+						i_Cooldown				=	StringToFloat(GetKeyValue(Keys, Values, "cooldown start?")) + (StringToFloat(GetKeyValue(Keys, Values, "cooldown per point?")) * i_Cooldown);
+						//i_Cooldown				=	1.0;
+
+						if (TriggerAbility(activator, target, ability, pos, Keys, Values, TalentName)) {	//	Don't need to check if the player has ability points since the roll is 0 if they don't.
+
+							if (i_Cooldown > 0.0) {
+
+								//if (IsFakeClient(client)) LogMessage("Creating Cooldown for %N by attacker %N for %3.3f seconds", victim, client, i_Cooldown);
+
+								/*if (IsClientActual(victim)) {
+									
+									b_IsImmune[victim] = true;
+									CreateTimer(i_Cooldown, Timer_IsNotImmune, victim, TIMER_FLAG_NO_MAPCHANGE);
+								}*/
+								if (IsClientActual(target)) CreateImmune(target, GetTalentPosition(target, TalentName), i_Cooldown);		// Immunities to individual talents so multiple talents can trigger!
+								if (IsClientActual(activator)) CreateCooldown(activator, GetTalentPosition(activator, TalentName), i_Cooldown);	// Infected Bots don't have cooldowns between abilities! Mwahahahaha
+							}
+
+							if (!StrEqual(infectedeffects, "0")) {
+
+								if (IsLegitimateClientAlive(activator) && GetClientTeam(activator) == TEAM_INFECTED) ActivateAbilityEx(activator, activator, damage, infectedeffects, i_Strength, i_Time);
+								else if (IsLegitimateClientAlive(target) && GetClientTeam(target) == TEAM_INFECTED) ActivateAbilityEx(target, activator, damage, infectedeffects, i_Strength, i_Time);
+							}
+							if (!StrEqual(survivoreffects, "0")) {
+
+								if (IsLegitimateClientAlive(activator) && GetClientTeam(activator) == TEAM_SURVIVOR) ActivateAbilityEx(activator, activator, damage, survivoreffects, i_Strength, i_Time);
+								else if (IsLegitimateClientAlive(target) && GetClientTeam(target) == TEAM_SURVIVOR) ActivateAbilityEx(target, activator, damage, survivoreffects, i_Strength, i_Time);
+							}
+						}
 					}
 				}
 			}
@@ -744,20 +761,23 @@ stock BlindPlayer(client, Float:effectTime = 3.0, amount = 0) {
 		{
 			BfWriteShort(message, (0x0002 | 0x0008));
 		}
-		
-		BfWriteByte(message, 255);
-		BfWriteByte(message, 255);
-		BfWriteByte(message, 255);
-		BfWriteByte(message, amount);
-		
-		EndMessage();
 
+		BfWriteByte(message, 255);
+		BfWriteByte(message, 255);
+		BfWriteByte(message, 255);
+		
 		if (!b_IsBlind[client] && amount > 0) {
 
 			b_IsBlind[client] = true;
 			CreateTimer(effectTime, Timer_BlindPlayer, client, TIMER_FLAG_NO_MAPCHANGE);
+			BfWriteByte(message, amount);
 		}
-		else if (b_IsBlind[client]) b_IsBlind[client] = false;
+		else if (b_IsBlind[client] || amount <= 0) {
+
+			b_IsBlind[client] = false;
+			BfWriteByte(message, 0);
+		}
+		EndMessage();
 	}
 }
 

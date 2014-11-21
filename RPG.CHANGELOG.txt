@@ -1,5 +1,23 @@
 New updates will be added to this log. Version updates prior to v2.0.1 will not be listed, as they aren't relevant.
 
+v2.0.3
+
++	Added additional keys for talent configs.
+	-	"weapons permitted?" key added.
+		+	setting the value to "ignore" or "all" will ignore this key.
+		+	infected players will automatically ignore this key; it exists for survivors only.
+		+	weapons are not case-sensitive, but due to Sourcemod String Length restrictions, there is a limit to how many
+			weapons you can allow for each talent.
+			-	Example: "weapons permitted?"	"weapon_rifle_ak47weapon_rifle_sg552"
+			A talent with this designation would allow the standard m16 (because it is weapon_rifle) as well as the ak47 and sg552
+			If any other weapon is used and the player is a survivor, the talent will have no chance of triggering.
+	-	"weapons permitted strict?" key added.
+		+	the same rules above apply, except:
+			-	only one weapon can be defined, here, and it must be an exact match to the weapon name.
+			-	Example: "weapons permitted strict?"	"weapon_rifle_ak47"
+			A talent with this designation will only trigger if the player is using an ak47.
+		+	this key OVERRIDES the "weapons permitted?" key, if it is not set to "ignore"
+
 v2.0.2
 
 +	Melee Weapon Support added to the POINTS module
