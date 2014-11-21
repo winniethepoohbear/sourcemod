@@ -1,0 +1,17 @@
+By default, ReadyUp does not automatically enable on any map.
+Flexibility was the key design, and as a result, campaign (and general map) support is not hard-coded.
+
+Campaign and Map support is defined in: CONFIGS/READYUP/MAPLIST.CFG
+
+The map order defined in the config will also double up as a map rotation.
+
+
+If a campaign or map is not listed in the config, when the level boots up, Ready Up and any module(s) installed will not function.
+I have added all officially supported Valve maps (L4D1, L4D2, and Cold Stream) to the map list, along with many of the survival maps.
+
+
+PLUGINS USING CUSTOM MAPNAME.CFG FILES
+
+Sometimes plugins will require a custom mapname.cfg to function, such as RUM_NoRush, which uses configs found in: CONFIGS/READYUP/NORUSH/
+There must be a config matching the name of the current map, or the plugin will unload. By default, I've included all maps that are packaged with
+Left 4 Dead 2. For custom maps, you'll need to add a config for each one.
