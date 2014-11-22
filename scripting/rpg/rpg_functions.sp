@@ -1075,7 +1075,11 @@ stock ActivateAbilityEx(target, activator, d_Damage, String:Effects[], Float:g_T
 			WritePackCell(pack, target);
 		}
 		if (FindCharInString(Effects, 'j') != -1) ForceClientJump(activator, target, g_TalentStrength);
-		if (FindCharInString(Effects, 'k') != -1) ForcePlayerSuicide(target);
+		if (FindCharInString(Effects, 'k') != -1) {
+
+			if (GetClientTeam(target) == TEAM_INFECTED) CalculateDamageAward(target);
+			ForcePlayerSuicide(target);
+		}
 		if (FindCharInString(Effects, 'l') != -1) CloakingDevice(target, g_TalentStrength, g_TalentTime);
 		if (FindCharInString(Effects, 'm') != -1) DamagePlayer(activator, target, g_TalentStrength);
 		if (FindCharInString(Effects, 'o') != -1) AbsorbDamage(target, g_TalentStrength, d_Damage);

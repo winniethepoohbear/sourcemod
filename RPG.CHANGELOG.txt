@@ -1,5 +1,12 @@
 New updates will be added to this log. Version updates prior to v2.0.1 will not be listed, as they aren't relevant.
 
+v2.0.3.1 (Hotfix)
+
++	Updated Talent Ability Effect: k (Kill target player)
+	-	When this ability effect is triggered, any experience and points earned will be properly awarded to players.
++	Updated Talent Ability Effect: B (Blind target player)
+	-	Players who die before this ability expires will no longer suffer its effects until the end of the current round.
+
 v2.0.3
 
 +	Added additional keys for talent configs.

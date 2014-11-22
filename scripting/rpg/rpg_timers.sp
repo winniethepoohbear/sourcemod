@@ -188,7 +188,7 @@ public Action:Timer_DamageIncrease(Handle:timer, any:client) {
 
 public Action:Timer_BlindPlayer(Handle:timer, any:client) {
 
-	if (IsLegitimateClientAlive(client)) BlindPlayer(client);
+	if (IsLegitimateClient(client)) BlindPlayer(client);
 	return Plugin_Stop;
 }
 
