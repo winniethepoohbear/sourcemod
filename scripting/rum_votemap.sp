@@ -294,14 +294,15 @@ stock Now_CalculateVotes() {
 
 stock GetMapVoted(String:s_MapName[]) {
 
-	new a_Size										= GetArraySize(a_MapList1);
+	//new a_Size										= GetArraySize(a_MapList1);
 
 	decl String:a_Map[PLATFORM_MAX_PATH];
 	decl String:s_Map[PLATFORM_MAX_PATH];
 
 	s_Map											= LowerString(s_MapName);
 
-	for (new i = 0; i < a_Size; i++) {
+	// Using GetArraySize inside of the loop, because the size seems to be shifting during this point, and it shouldn't be.
+	for (new i = 0; i < GetArraySize(a_MapList1); i++) {
 
 		GetArrayString(Handle:a_MapList1, i, a_Map, sizeof(a_Map));
 		a_Map										= LowerString(a_Map);
