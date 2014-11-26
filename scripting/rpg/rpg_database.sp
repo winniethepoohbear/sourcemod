@@ -193,7 +193,7 @@ public QueryResults(Handle:owner, Handle:hndl, const String:error[], any:client)
 
 public ClearAndLoadBot() {
 
-	if (b_IsLoadingInfectedBotData) return;
+	if (hDatabase == INVALID_HANDLE || b_IsLoadingInfectedBotData) return;
 	b_IsLoadingInfectedBotData = true;
 
 	decl String:tquery[512];
@@ -234,6 +234,8 @@ stock ResetData(client) {
 
 stock ClearAndLoad(String:key[])
 {
+
+	if (hDatabase == INVALID_HANDLE) return;
 	new client = FindClientWithAuthString(key);
 
 	if (b_IsLoading[client]) return;
@@ -407,6 +409,7 @@ public Query_CheckIfDataExists(Handle:owner, Handle:hndl, const String:error[], 
 
 stock CreateNewInfectedBot() {
 
+	if (hDatabase == INVALID_HANDLE) return;
 	decl String:tquery[512];
 	decl String:key[64];
 
@@ -419,6 +422,7 @@ stock CreateNewInfectedBot() {
 
 stock CreateNewPlayer(client) {
 
+	if (hDatabase == INVALID_HANDLE) return;
 	decl String:tquery[512];
 	decl String:key[64];
 
@@ -431,8 +435,10 @@ stock CreateNewPlayer(client) {
 
 stock SaveAndClear(client, bool:b_IsTrueDisconnect = false) {
 
-	if (!b_ActiveThisRound[client]) return;	// the player wasn't active this round.
-	if (bSaveData[client]) return;
+	// if the database isn't connected, we don't try to save data, because that'll just throw errors.
+	// If the player didn't participate, or if they are currently saving data, we don't save as well.
+	// It's possible (but not likely) for a player to try to save data while saving, due to their ability to call the function at any time through commands.
+	if (hDatabase == INVALID_HANDLE || !b_ActiveThisRound[client] || bSaveData[client]) return;
 
 	if (b_IsTrueDisconnect) resr[client] = 1;
 	else resr[client] = 0;
@@ -512,7 +518,7 @@ stock SaveAndClear(client, bool:b_IsTrueDisconnect = false) {
 
 stock SaveInfectedBotData() {
 	
-	if (b_IsSavingInfectedBotData) return;
+	if (hDatabase == INVALID_HANDLE || b_IsSavingInfectedBotData) return;
 	decl String:key[64];
 	decl String:tquery[512];
 	decl String:text[512];
@@ -577,6 +583,7 @@ stock SaveInfectedBotData() {
 
 stock LoadDirectorActions() {
 
+	if (hDatabase == INVALID_HANDLE) return;
 	decl String:key[64];
 	decl String:section_t[64];
 	decl String:tquery[512];
@@ -701,7 +708,23 @@ stock FindClientWithAuthString(String:key[]) {
 
 stock bool:IsReserve(client) {
 
-	if (HasCommandAccess(client, "z") || HasCommandAccess(client, "a")) return true;
+	if (HasCommandAccess(client, GetConfigValue("reserve player flags?"))) return true;
+	return false;
+}
+
+stock bool:HasCommandAccess(client, String:accessflags[]) {
+
+	decl String:flagpos[2];
+
+	// We loop through the access flags passed to this function to see if the player has any of them and return the result.
+	// This means flexibility for anything in RPG that allows custom flags, such as reserve player access or director menu access.
+	for (new i = 0; i < strlen(accessflags); i++) {
+
+		flagpos[0] = accessflags[i];
+		flagpos[1] = 0;
+		if (HasCommandAccessEx(client, flagpos)) return true;
+	}
+	// Old Method -> if (HasCommandAccess(client, "z") || HasCommandAccess(client, "a")) return true;
 	return false;
 }
 

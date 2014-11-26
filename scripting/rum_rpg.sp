@@ -1,9 +1,36 @@
+/**
+ * =============================================================================
+ * Ready Up - RPG (C)2014 Michael "Skye" Toth
+ * =============================================================================
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, version 3.0, as published by the
+ * Free Software Foundation.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * As a special exception, AlliedModders LLC gives you permission to link the
+ * code of this program (as well as its derivative works) to "Half-Life 2," the
+ * "Source Engine," the "SourcePawn JIT," and any Game MODs that run on software
+ * by the Valve Corporation.  You must obey the GNU General Public License in
+ * all respects for all other code used.  Additionally, AlliedModders LLC grants
+ * this exception to all derivative works.  AlliedModders LLC defines further
+ * exceptions, found in LICENSE.txt (as of this writing, version JULY-31-2007),
+ * or <http://www.sourcemod.net/license.php>.
+ */
+
 #define TEAM_SPECTATOR		1
 #define TEAM_SURVIVOR		2
 #define TEAM_INFECTED		3
 #define MAX_ENTITIES		2048
 #define MAX_CHAT_LENGTH		1024
-#define PLUGIN_VERSION		"2.0.4"
+#define PLUGIN_VERSION		"2.0.4.1"
 #define PLUGIN_CONTACT		"steamcommunity.com/id/palevixen"
 #define PLUGIN_NAME			"SkyRPG"
 #define PLUGIN_DESCRIPTION	"A modular RPG plugin that reads user-generated config files"
@@ -551,6 +578,13 @@ public OnMapEnd() {
 		SubmitEventHooks(0);
 		//SaveAndClear(-1, true);
 
+		// We need to close the database handle when the map ends, along with everything else.
+		// If we don't, the handle will connect to multiple instances with the database and... that can cause problems.
+		if (hDatabase != INVALID_HANDLE) {
+
+			CloseHandle(Handle:hDatabase);
+			hDatabase = INVALID_HANDLE;
+		}
 		if (MainKeys != INVALID_HANDLE) {
 
 			CloseHandle(Handle:MainKeys);
@@ -1203,7 +1237,7 @@ public Action:CMD_ChatTag(client, args) {
 
 public Action:CMD_GiveLevel(client, args) {
 
-	if (HasCommandAccess(client, GetConfigValue("director talent flags?")) && args > 1) {
+	if (HasCommandAccess(client, GetConfigValue("give player level flags?")) && args > 1) {
 
 		decl String:arg[MAX_NAME_LENGTH], String:arg2[4];
 		GetCmdArg(1, arg, sizeof(arg));
@@ -1226,7 +1260,7 @@ public Action:CMD_GiveLevel(client, args) {
 
 public Action:CMD_GiveStorePoints(client, args)
 {
-	if (!HasCommandAccess(client, GetConfigValue("director talent flags?"))) return Plugin_Handled;
+	if (!HasCommandAccess(client, GetConfigValue("give store points flags?"))) return Plugin_Handled;
 	if (args < 2)
 	{
 		PrintToChat(client, "%T", "Give Store Points Syntax", client, orange, white);
@@ -1480,8 +1514,9 @@ public ReadyUp_LoadFromConfigEx(Handle:key, Handle:value, Handle:section, String
 				}
 			}
 		}
-		MySQL_Init();	// Testing to see if it works this way.
-		//LogMessage("DIRECTOR ACTIONS SIZE: %d", GetArraySize(a_DirectorActions));
+
+		// We only attempt connection to the database in the instance that there are no open connections.
+		if (hDatabase == INVALID_HANDLE) MySQL_Init();
 	}
 
 	if (StrEqual(configname, CONFIG_MAIN) && !b_IsFirstPluginLoad) {

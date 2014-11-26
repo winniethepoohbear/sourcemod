@@ -2001,20 +2001,6 @@ stock bool:QuickCommandAccess(client, args, bool:b_IsTeamOnly) {
 	return false;
 }
 
-/*bool:HasCommandAccess(client, String:permissions[]) {
-
-	if (IsLegitimateClient(client) && !IsFakeClient(client)) {
-
-		decl flags;
-		flags = GetUserFlagBits(client);
-		decl cflags;
-		cflags = ReadFlagString(permissions);
-
-		if (flags & cflags) return true;
-	}
-	return false;
-}*/
-
 stock LoadHealthMaximum(client) {
 
 	if (GetClientTeam(client) == TEAM_INFECTED) DefaultHealth[client] = GetClientHealth(client);
@@ -2035,14 +2021,6 @@ stock PlayerSpawnAbilityTrigger(attacker) {
 
 	if (IsLegitimateClientAlive(attacker)) {
 
-		/*for (new i = 1; i <= MaxClients; i++) {
-
-			if (IsClientInGame(i) && IsFakeClient(i)) {
-
-				DamageAward[attacker][i] = 0;
-				DamageAward[i][attacker] = 0;
-			}
-		}*/
 		SetSpeedMultiplierBase(attacker);
 
 		SpeedMultiplier[attacker] = SpeedMultiplierBase[attacker];		// defaulting the speed. It'll get modified in speed modifer spawn talents.
@@ -2399,4 +2377,92 @@ stock Float:TeamworkProximityMultiplier(client, bool:b_IsExperience) {
 	}
 	if (playerProximityMultiplier < proximityMultiplierMinimum) playerProximityMultiplier = proximityMultiplierMinimum;
 	return playerProximityMultiplier;
+}
+
+stock LegacyItemRoll(victim, attacker, bool:b_IsCommon) {
+
+	//DamageAward[i][client]
+	if (HumanPlayersIngame() < StringToInt(GetConfigValue("required humans for item drops?"))) return;
+	new clientid	= attacker;		// we set the default client to the attacker, since if it's a common killed, we don't determine a specific client from damage.
+	new bestroll	= 0;
+	new currroll	= 0;
+	decl String:rollvalue[64];
+	Format(rollvalue, sizeof(rollvalue), "n/a");		// default for common kills.
+	decl String:Name[64];
+	GetClientName(attacker, Name, sizeof(Name));
+	decl String:itemname[64];
+	decl String:translationname[64];
+
+	if (!b_IsCommon) {
+
+		// If a common infected is not the kill target (re: if it's special infected) we want to roll all eligible participants.
+		// All this does is determine who gets a CHANCE to win an item. It doesn't guarantee that the item drop roll that follows will be successful.
+
+		new Float:minimumDamage		= StringToFloat(GetConfigValue("required damage percent for legacy roll?"));
+		if (minimumDamage > 0.0) minimumDamage *= GetMaximumHealth(victim);
+
+		for (new i = 1; i <= MaxClients; i++) {
+
+			if (IsLegitimateClient(i) && !IsFakeClient(i) && GetClientTeam(i) == TEAM_SURVIVOR && DamageAward[i][victim] > 0) {
+
+				if (minimumDamage == 0.0 || DamageAward[i][victim] >= RoundToFloor(minimumDamage)) {
+
+					currroll	= GetRandomInt(1, 100);
+					if (currroll > bestroll) {
+
+						clientid	= i;
+						bestroll	= currroll;
+						Format(rollvalue, sizeof(rollvalue), "%d", bestroll);
+						GetClientName(clientid, Name, sizeof(Name));
+					}
+				}
+			}
+		}
+	}
+
+	// now we roll the potential item awards for the player.
+	if (IsSlateChance(victim)) {
+
+		SlatePoints[clientid]++;
+		PrintToChatAll("%t", "SLATE award legacy", blue, Name, white, orange, white, orange, rollvalue, white);
+	}
+	else {
+
+		new pos = -1;
+		pos			= IsStoreChance(victim, clientid);
+		if (pos >= 0) {
+
+			Format(itemname, sizeof(itemname), "%s", StoreItemName(clientid, pos));
+			IsStoreItem(clientid, itemname, true);	// true because we want to give them the item, not just verify that it exists.
+			for (new i = 1; i <= MaxClients; i++) {
+
+				if (IsClientInGame(i) && !IsFakeClient(i)) {
+
+					Format(translationname, sizeof(translationname), "%T", itemname, i);
+					PrintToChat(i, "%T", "Store Item Award legacy", i, blue, Name, white, orange, translationname, white, orange, rollvalue, white);
+				}
+			}
+		}
+		else {
+
+			pos = -1;
+			pos		= IsLockedTalentChance(victim, false);
+			if (pos >= 0) {
+
+				GetArrayString(Handle:a_Database_Talents_Defaults_Name, pos, itemname, sizeof(itemname));
+				if (IsTalentLocked(clientid, itemname)) {
+
+					UnlockTalent(clientid, itemname, false, true);		// arg3 is bIsEndOfMapRoll, which defaults to false, arg4 is bIsLegacy, which defaults to false.
+					for (new i = 1; i <= MaxClients; i++) {
+
+						if (isClientInGame(i) && !IsFakeClient(i)) {
+
+							Format(translationname, sizeof(translationname), "%T", itemname, i);
+							PrintToChat(i, "%T", "Locked Talent Award legacy", i, blue, Name, white, orange, itemname, white, orange, rollvalue, white);
+						}
+					}
+				}
+			}
+		}
+	}
 }

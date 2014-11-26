@@ -139,7 +139,7 @@ stock FindZombieClass(client)
 	return GetEntProp(client, Prop_Send, "m_zombieClass");
 }
 
-stock bool:HasCommandAccess(client, String:permissions[]) {
+stock bool:HasCommandAccessEx(client, String:permissions[]) {
 
 	decl flags;
 	flags = GetUserFlagBits(client);

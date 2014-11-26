@@ -704,15 +704,21 @@ stock bool:TalentListingFound(client, Handle:Keys, Handle:Values, String:MenuNam
 			GetArrayString(Handle:Values, i, value, sizeof(value));
 			if (!StrEqual(MenuName, value)) return false;
 		}
-		if (StrEqual(key, "team?")) {
+		// The following segment is no longer used. It was originally used when configs were not split based on team number.
+		// It meant that server operators would fill a single, massive config with team data, and it would be parsed to a player based on this setting.
+		// That's still an option that I'm looking at, for the future, but for now, it won't be the case.
+		/*if (StrEqual(key, "team?")) {
 
 			GetArrayString(Handle:Values, i, value, sizeof(value));
 			if (strlen(value) > 0 && GetClientTeam(client) != StringToInt(value)) return false;
 		}
+		*/
+		// If this value is set to anything other than "none" a player won't be able to view or select it unless they have at least one of the flags
+		// provided. This allows server operators to experiment with new talents, publicly, while granting access to these talents to specific players.
 		if (StrEqual(key, "flags?")) {
 
 			GetArrayString(Handle:Values, i, value, sizeof(value));
-			if (strlen(value) > 0 && !HasCommandAccess(client, value)) return false;
+			if (!StrEqual(value, "none", false) && !HasCommandAccess(client, value)) return false;
 		}
 	}
 	return true;

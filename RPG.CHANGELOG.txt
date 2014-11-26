@@ -8,23 +8,49 @@ v2.1 (In Development)
 		+	Picking up a new, un-identified rune requires dropping the rune you are carrying, if you are carrying a rune.
 		+	Picking up a rune resets your Rune Level to 0.
 		+	Players spend experience to upgrade Rune Level, in the same way they spend it to upgrade talents and level up.
-		
+
+v2.0.4.1 (November 26, 2014)
++	Added complete customization for user flags.
+	-	This adds several new variables to /CONFIGS/READYUP/RPG/CONFIG.CFG
+		+	"reserve player flags?"
+			If a player has ANY of these flags, RPG will consider them to be a reserved player.
+			Originally, this was hard-coded to "z" or "a" of which it defaults and can now be changed.
+		+	"director talent flags?"
+			If a player has ANY of these flags, RPG will grant them access to the director menu.
+			This was originally "z" only and the command is determined by "director talent command?"
+		+	"give player level flags?"
+			If a player has ANY of these flags, they can use the command to give players levels.
+			This was originally "z" only and the command is determined by "give level command?"
+		+	"give store points flags?"
+			If a player has ANY of these flags, they can use the command to give players store points.
+			This was originally "z" only and the command is determined by "give store points command?"
+	-	Adds a new MANDATORY variable to talent configs; /CONFIGS/READYUP/RPG/SURVIVORMENU.CFG and /CONFIGS/READYUP/RPG/INFECTEDMENU.CFG
+		+	"flags?"
+			By default, this variable is set to "none" which disables its feature.
+			Otherwise, if flags are set, any player who does NOT have any of the flags will not be able to see OR access the talent.
+			This is a great way for server operators to test new talents on PUBLIC servers, while granting the ability to do so to specific people.
+			
+			NOTE: When updating to v2.0.4.1, server operators will need to replace the talent configs with the ones uploaded with this update
+			or manually add the "flags?" key to each talent in both configs. After this update, any talent that doesn't have that keyvalue will
+			not show in the menu for anyone.
++	Copyright information, including GNU GPLv3 information added to rum_rpg.sp
+
 v2.0.4 (November 26, 2014)
 
 +	Added support for "legacy" item rolls, reflecting the method that I used in SkyRPG3.
 	-	Two new variables supporting this feature in the /CONFIGS/READYUP/RPG/CONFIG.CFG
 		+	"required damage percent for legacy roll?"
-		The percentage of a SI max health required for a player to be considered for a legacy item roll.
-		Careful here, because it can stop a player from hitting the SI with a single bullet from being eligible.
+			The percentage of a SI max health required for a player to be considered for a legacy item roll.
+			Careful here, because it can stop a player from hitting the SI with a single bullet from being eligible.
 		+	"legacy item drops?"
-		If enabled, item drops operate like they did in skyrpg3, where, if an item drop is determined to happen, any survivor
-		who damaged the SI in question rolls a die, and a player is automatically awarded over chat.
+			If enabled, item drops operate like they did in skyrpg3, where, if an item drop is determined to happen, any survivor
+			who damaged the SI in question rolls a die, and a player is automatically awarded over chat.
 +	Added support for server operators to opt in/out of allowing items listed in the in-game store to be included in random
 	world drop chance, as well as end of map (EOM) rolls.
 	-	New variable added for each option in the /CONFIGS/READYUP/RPG/STORE.CFG
 		+	"store purchase only?"
-		If enabled, the item can ONLY be obtained through a purchase through the store (and as a result, not through world
-		drops or end of map rolls)
+			If enabled, the item can ONLY be obtained through a purchase through the store (and as a result, not through world
+			drops or end of map rolls)
 +	Miscellaneous Updates
 	-	Added some comments in code explaining functions and other things the code is doing.
 	-	Begun restructuring of main RPG.SP code, for stability and memory efficiency.
