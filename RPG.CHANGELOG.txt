@@ -1,5 +1,36 @@
 New updates will be added to this log. Version updates prior to v2.0.1 will not be listed, as they aren't relevant.
 
+v2.1 (In Development)
+
++	Runes!
+	-	Runes add a new, comprehensive system to RPG, allowing players to wield powerful artifacts.
+		+	A player may hold only one rune at a time.
+		+	Picking up a new, un-identified rune requires dropping the rune you are carrying, if you are carrying a rune.
+		+	Picking up a rune resets your Rune Level to 0.
+		+	Players spend experience to upgrade Rune Level, in the same way they spend it to upgrade talents and level up.
+		
+v2.0.4 (November 26, 2014)
+
++	Added support for "legacy" item rolls, reflecting the method that I used in SkyRPG3.
+	-	Two new variables supporting this feature in the /CONFIGS/READYUP/RPG/CONFIG.CFG
+		+	"required damage percent for legacy roll?"
+		The percentage of a SI max health required for a player to be considered for a legacy item roll.
+		Careful here, because it can stop a player from hitting the SI with a single bullet from being eligible.
+		+	"legacy item drops?"
+		If enabled, item drops operate like they did in skyrpg3, where, if an item drop is determined to happen, any survivor
+		who damaged the SI in question rolls a die, and a player is automatically awarded over chat.
++	Added support for server operators to opt in/out of allowing items listed in the in-game store to be included in random
+	world drop chance, as well as end of map (EOM) rolls.
+	-	New variable added for each option in the /CONFIGS/READYUP/RPG/STORE.CFG
+		+	"store purchase only?"
+		If enabled, the item can ONLY be obtained through a purchase through the store (and as a result, not through world
+		drops or end of map rolls)
++	Miscellaneous Updates
+	-	Added some comments in code explaining functions and other things the code is doing.
+	-	Begun restructuring of main RPG.SP code, for stability and memory efficiency.
+	
+	NOTE: The rum_rpg.phrases.txt translations file has been updated with several new translations in this update.
+	
 v2.0.3.1 (Hotfix)
 
 +	Updated Talent Ability Effect: k (Kill target player)

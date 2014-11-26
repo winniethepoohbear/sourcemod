@@ -947,7 +947,7 @@ stock AddTalentPoints(client, String:Name[], TalentPoints) {
 	}
 }
 
-stock UnlockTalent(client, String:Name[], bool:bIsEndOfMapRoll = false) {
+stock UnlockTalent(client, String:Name[], bool:bIsEndOfMapRoll = false, bool:bIsLegacy = false) {
 
 	decl String:text[64];
 	decl String:PlayerName[64];
@@ -961,13 +961,17 @@ stock UnlockTalent(client, String:Name[], bool:bIsEndOfMapRoll = false) {
 		if (StrEqual(text, Name)) {
 
 			SetArrayString(a_Database_PlayerTalents[client], i, "0");
-			for (new ii = 1; ii <= MaxClients; ii++) {
 
-				if (IsClientInGame(ii) && !IsFakeClient(ii)) {
+			if (!bIsLegacy) {		// We advertise elsewhere if it's a legacy roll.
 
-					Format(text, sizeof(text), "%T", Name, ii);
-					if (!bIsEndOfMapRoll) PrintToChat(ii, "%T", "Locked Talent Award", ii, blue, PlayerName, white, orange, text, white);
-					else PrintToChat(ii, "%T", "Locked Talent Award (end of map roll)", ii, blue, PlayerName, white, orange, text, white, white, orange, white);
+				for (new ii = 1; ii <= MaxClients; ii++) {
+
+					if (IsClientInGame(ii) && !IsFakeClient(ii)) {
+
+						Format(text, sizeof(text), "%T", Name, ii);
+						if (!bIsEndOfMapRoll) PrintToChat(ii, "%T", "Locked Talent Award", ii, blue, PlayerName, white, orange, text, white);
+						else PrintToChat(ii, "%T", "Locked Talent Award (end of map roll)", ii, blue, PlayerName, white, orange, text, white, white, orange, white);
+					}
 				}
 			}
 			break;

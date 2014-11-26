@@ -219,8 +219,9 @@ public Call_Event(Handle:event, String:event_name[], bool:dontBroadcast, pos) {
 		}
 		DamageMultiplierBase[victim] = 0.0;
 		SDKUnhook(victim, SDKHook_OnTakeDamage, OnTakeDamage);
-		CalculateDamageAward(victim);
+		if (b_IsLegacyMode) LegacyItemRoll(victim, attacker, false);
 		SpawnItemChance(victim, attacker);
+		CalculateDamageAward(victim);
 	}
 	if (IsLegitimateClient(victim) && IsFakeClient(victim) && GetClientTeam(victim) == TEAM_SURVIVOR) return;	// survivor bots don't participate in the mod, yet.
 	if (isdamageaward == 1 && attacker == 0) {
@@ -487,7 +488,8 @@ public Call_Event(Handle:event, String:event_name[], bool:dontBroadcast, pos) {
 	if (deathaward && IsLegitimateClientAlive(attacker) && GetClientTeam(attacker) == TEAM_SURVIVOR && !IsClientActual(victim) && victim == 0) {
 
 		new cliententity = GetEventInt(event, "entityid");
-		SpawnItemChance(cliententity, attacker);
+		if (b_IsLegacyMode) LegacyItemRoll(cliententity, attacker, true);
+		else SpawnItemChance(cliententity, attacker);
 		CommonsKilled++;
 
 		if (headshot) {
@@ -855,6 +857,9 @@ stock IsStoreChance(client, attacker, bool:bIsEndOfMapRoll = false) {
 
 		StoreChanceKeys[attacker]				= GetArrayCell(a_Store, i, 0);
 		StoreChanceValues[attacker]				= GetArrayCell(a_Store, i, 1);
+
+		// There are some items a server operator may not WANT to be eligible to be awarded from world drops or end of map rolls. If that's the case, we skip it.
+		if (StringToInt(GetKeyValue(StoreChanceKeys[attacker], StoreChanceValues[attacker], "store purchase only?")) == 1) continue;
 
 		if (!bIsEndOfMapRoll) {
 

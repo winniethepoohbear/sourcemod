@@ -1,3 +1,8 @@
+/*
+ *	Provides a shortcut method to calling ANY value from keys found in CONFIGS/READYUP/RPG/CONFIG.CFG
+ *	@return		-1		if the requested key could not be found.
+ *	@return		value	if the requested key is found.
+ */
 stock String:GetConfigValue(String:KeyName[]) {
 	
 	decl String:text[512];
@@ -20,6 +25,10 @@ stock String:GetConfigValue(String:KeyName[]) {
 	return text;
 }
 
+/*
+ *	Checks if any non-bot survivors are incapacitated.
+ *	@return		true/false		depending on the result.
+ */
 stock bool:AnySurvivorsIncapacitated() {
 
 	for (new i = 1; i <= MaxClients; i++) {
@@ -29,6 +38,10 @@ stock bool:AnySurvivorsIncapacitated() {
 	return false;
 }
 
+/*
+ *	Checks if there are any non-bot, non-spectator players in the game.
+ *	@return		true/false		depending on the result.
+ */
 stock bool:IsPlayersParticipating() {
 
 	for (new i = 1; i <= MaxClients; i++) {
@@ -38,6 +51,11 @@ stock bool:IsPlayersParticipating() {
 	return false;
 }
 
+/*
+ *	Finds a random, non-bot client in-game.
+ *	@return		client index if found.
+ *	@return		-1 if not found.
+ */
 stock FindAnyRandomClient() {
 
 	for (new i = 1; i <= MaxClients; i++) {
@@ -47,6 +65,11 @@ stock FindAnyRandomClient() {
 	return -1;
 }
 
+/*
+ *	Checks to see if the client has an active experience booster.
+ *	If the client does, ExperienceValue is multiplied against the booster value and returned.
+ *	@return (ExperienceValue * Multiplier)		where Multiplier is modified based on the result of AddMultiplier(client, i)
+ */
 stock Float:CheckExperienceBooster(client, ExperienceValue) {
 
 	// Return ExperienceValue as it is if the client doesn't have a booster active.
@@ -78,6 +101,12 @@ stock Float:CheckExperienceBooster(client, ExperienceValue) {
 	return (ExperienceValue * Multiplier);
 }
 
+/*
+ *	Checks to see whether:
+ *	a.) The position in the store is an experience booster
+ *	b.) If it is, if the client has time remaining in it.
+ *	@return		Float:value			time remaining on experience booster. 0.0 if it could not be found.
+ */
 stock Float:AddMultiplier(client, pos) {
 
 	decl String:ClientValue[64];
@@ -104,6 +133,12 @@ stock Float:AddMultiplier(client, pos) {
 	return 0.0;		// It wasn't found, so no multiplier is added.
 }
 
+/*
+ *	SDKHooks function.
+ *	We're using it to prevent any melee damage, due to the bizarre way that melee damage is handled, it's hit or miss whether it is changed.
+ *	@return Plugin_Changed		if a melee weapon was used.
+ *	@return Plugin_Continue		if a melee weapon was not used.
+ */
 public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damagetype) {
 
 	if (IsClientActual(attacker) && GetClientTeam(attacker) == TEAM_SURVIVOR && IsClientActual(victim) && GetClientTeam(victim) == TEAM_INFECTED) {
@@ -121,12 +156,19 @@ public Action:OnTakeDamage(victim, &attacker, &inflictor, &Float:damage, &damage
 	return Plugin_Continue;
 }
 
+/*
+ *	Cycles through all given talents in the CONFIG/READYUP/RPG/SURVIVORMENU.CFG or CONFIG/READYUP/RPG/INFECTEDMENU.CFG
+ *	file, respective to the activator's team, searching for any talent that has the ability char in its "ability trigger?" key
+ *	and then activates it. If it can't be found in ANY of the talents, however, a logmessage, NOT A FAILSTATE, is returned.
+ *	Prototype: void FindAbilityByTrigger(activator, int target = 0, char ability, int zombieclass = 0, int d_Damage)
+ */
 stock FindAbilityByTrigger(activator, target = 0, ability, zombieclass = 0, d_Damage) {
 
 	if (IsLegitimateClient(activator) && ((IsFakeClient(activator) && GetClientTeam(activator) == TEAM_INFECTED) || !IsFakeClient(activator))) {
 
 		new a_Size			=	0;
 
+		// Zombieclass is either ignored or passed as 0 If the player is a survivor. See stock FindZombieClass(client)
 		if (zombieclass == 0) a_Size		=	GetArraySize(a_Menu_Talents_Survivor);
 		else a_Size	=	GetArraySize(a_Menu_Talents_Infected);
 
@@ -138,6 +180,8 @@ stock FindAbilityByTrigger(activator, target = 0, ability, zombieclass = 0, d_Da
 
 		for (new i = 0; i < a_Size; i++) {
 
+			// We check if they are a survivor OR if zombieclass is 0, just to make sure survivors pull from their respective talent tree, regardless
+			// of what the zombieclass is passed as.
 			if (!IsFakeClient(activator) && (GetClientTeam(activator) == TEAM_SURVIVOR || zombieclass == 0)) {
 
 				TriggerKeys[activator]				=	GetArrayCell(a_Menu_Talents_Survivor, i, 0);
@@ -156,13 +200,19 @@ stock FindAbilityByTrigger(activator, target = 0, ability, zombieclass = 0, d_Da
 				return;
 			}
 
+			// We get the name of the talent. It's not actually used for anything when it's passed through the ActivateAbility function, but I wanted to
+			// keep it in case I find a use for it, whether of debugging nature, or something else, later on.
 			GetArrayString(Handle:TriggerSection[activator], 0, TalentName, sizeof(TalentName));
 
+			// If the talent in question has an ability trigger that matches the ability trigger passed through, we call ActivateAbility.
+			// Note that GetKeyValue(Handle:Keys, Handle:Values, String:KeyString) is similar to GetConfigValue, except it lets you pull values from ANY set of handles, so we aren't restricted
+			// by any specific config file. In this case, we use the Handles pulled from the respective array, above.
 			if (FindCharInString(GetKeyValue(TriggerKeys[activator], TriggerValues[activator], "ability trigger?"), ability) != -1) {
 
 				ActivateAbility(activator, target, i, d_Damage, FindZombieClass(activator), TriggerKeys[activator], TriggerValues[activator], TalentName, ability);
 			}
 
+			// This is the method used in v1.x, prior to the inclusion of the GetKeyValue function. This version is now deprecated, but it's still here for reference.
 			/*b_Size			=	GetArraySize(TriggerKeys[client]);
 			for (new ii = 0; ii < b_Size; ii++) {
 
@@ -178,6 +228,13 @@ stock FindAbilityByTrigger(activator, target = 0, ability, zombieclass = 0, d_Da
 	}
 }
 
+/*
+ *	This function checks to make sure the activator and target, along with other variables like zombieclass are eligible.
+ *	If they are, it calculates strength of effect, cooldowns, and other timers, and then rolls the TriggerAbility function.
+ *	TriggerAbility essentially returns true if chance rolls aren't required for the talent, or has a chance to return true or false if they are, depending on its outcome.
+ *	ActivateAbilityEx is called on a successful roll, given there are effects to cast on the respective player(s).
+ *	void ActivateAbility(activator, target, int pos, int damage, int zombieclass, Handle:Keys, Handle:Values, String:TalentName[], char ability)
+ */
 stock ActivateAbility(activator, target, pos, damage, zombieclass, Handle:Keys, Handle:Values, String:TalentName[], ability) {
 
 	if (IsLegitimateClientAlive(activator) && (target == 0 || (target > 0 && IsLegitimateClientAlive(target)))) {

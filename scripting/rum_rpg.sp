@@ -50,6 +50,7 @@ public Plugin:myinfo = {
 	url = PLUGIN_URL,
 };
 
+new bool:b_IsLegacyMode;
 new String:currentCampaignName[64];
 new Float:g_MapFlowDistance;
 new Handle:h_KilledPosition_X[MAXPLAYERS + 1];
@@ -1496,6 +1497,9 @@ public ReadyUp_LoadFromConfigEx(Handle:key, Handle:value, Handle:section, String
 		RegConsoleCmd(GetConfigValue("give store points command?"), CMD_GiveStorePoints);
 		RegConsoleCmd(GetConfigValue("give level command?"), CMD_GiveLevel);
 		RegConsoleCmd(GetConfigValue("chat tag naming command?"), CMD_ChatTag);
+
+		if (StringToint(GetConfigValue("legacy item drops?")) >= 1) b_IsLegacyMode = true;
+		else b_IsLegacyMode = false;
 	}
 
 	if (StrEqual(configname, CONFIG_EVENTS)) SubmitEventHooks(1);
