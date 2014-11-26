@@ -33,6 +33,10 @@ v2.0.4.1 (November 26, 2014)
 			NOTE: When updating to v2.0.4.1, server operators will need to replace the talent configs with the ones uploaded with this update
 			or manually add the "flags?" key to each talent in both configs. After this update, any talent that doesn't have that keyvalue will
 			not show in the menu for anyone.
++	Corrected an issue related to RPG opening up multiple database connections which may lead to:
+	-	Issues related to player data correctly loading / saving.
+	-	Issues related to database timeouts.
+	
 +	Copyright information, including GNU GPLv3 information added to rum_rpg.sp
 
 v2.0.4 (November 26, 2014)
