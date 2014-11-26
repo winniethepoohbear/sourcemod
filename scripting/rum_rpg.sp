@@ -3,7 +3,7 @@
 #define TEAM_INFECTED		3
 #define MAX_ENTITIES		2048
 #define MAX_CHAT_LENGTH		1024
-#define PLUGIN_VERSION		"2.0.3.1"
+#define PLUGIN_VERSION		"2.0.4"
 #define PLUGIN_CONTACT		"steamcommunity.com/id/palevixen"
 #define PLUGIN_NAME			"SkyRPG"
 #define PLUGIN_DESCRIPTION	"A modular RPG plugin that reads user-generated config files"
